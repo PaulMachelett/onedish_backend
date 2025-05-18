@@ -30,25 +30,21 @@ fav_restaurants_schema = FavRestaurantSchema(many=True)
 def register():
     data = request.json
 
-    # Pflichtfelder prüfen
     if not data.get("username") or not data.get("password") or not data.get("email"):
         return jsonify({"msg": "Benutzername, Passwort und E-Mail sind erforderlich"}), 400
 
-    # Prüfen, ob Nutzername oder E-Mail bereits existieren
     if Users.query.filter_by(username=data["username"]).first():
         return jsonify({"msg": "Benutzername bereits vergeben"}), 409
     if Users.query.filter_by(email=data["email"]).first():
         return jsonify({"msg": "E-Mail bereits registriert"}), 409
 
-    # Passwort hashen
     data["password"] = generate_password_hash(data["password"])
-
-    # Benutzer speichern
     user = user_schema.load(data)
     db.session.add(user)
     db.session.commit()
 
-    return user_schema.jsonify(user), 201
+    access_token = create_access_token(identity=user.id)
+    return jsonify(access_token=access_token), 201
 
 
 # --- LOGIN ---
