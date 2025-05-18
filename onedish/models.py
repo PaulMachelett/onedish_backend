@@ -4,7 +4,9 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     sur_name = db.Column(db.String(255))
-    email = db.Column(db.String(255))
+    email = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(255), unique=True, nullable=False)  # NEU
+    password = db.Column(db.String(255), nullable=False)               # NEU (hashed)
     subscribed = db.Column(db.Boolean)
     google_id = db.Column(db.Integer)
 
